@@ -1,5 +1,5 @@
 # Build osslsigncode in a build stage
-FROM debian:jessie AS build
+FROM debian:stable AS build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         autoconf \
@@ -13,23 +13,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ENV O_VER=1.7.1
+ENV O_REL=2.1 O_VER=2.1.0
 RUN cd /tmp \
-    && curl -OL https://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-${O_VER}.tar.gz \
+    && curl -OL https://github.com/mtrojnar/osslsigncode/releases/download/${O_REL}/osslsigncode-${O_VER}.tar.gz \
     && tar zxf osslsigncode-${O_VER}.tar.gz \
     && cd osslsigncode-${O_VER} \
     && ./configure \
     && make install
 
 # Now create the final image
-FROM debian:jessie-slim
+FROM debian:stable-slim
 MAINTAINER Brian Bassett <bbassett1276@gmail.com>
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
-        libcurl3 \
-        libssl1.0.0 \
+        libcurl4 \
+        libssl1.1 \
         netbase \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
